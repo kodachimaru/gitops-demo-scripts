@@ -1,0 +1,35 @@
+# Helmfile
+#
+#   Prerequisites:
+#     - Install Helmfile binary: https://github.com/roboll/helmfile#installation
+#     - Install Helm Diff plugin for Helm: https://github.com/databus23/helm-diff#install
+#
+#   To install/upgrade all the specified releases:
+#     $ helmfile apply
+#
+#   To install/upgrade only one specific release:
+#     $ helmfile \
+#         --selector release-name=XXXX \
+#         apply
+#   
+#   To delete releases, same as above with: helmfile delete/destroy
+#
+
+helmDefaults:
+  tillerNamespace: kube-system
+
+releases:
+
+  - name: my-release-1
+    chart: ./my-chart-1
+    namespace: default
+    labels:
+      release-name: my-release-1
+      owner: me
+
+  - name: my-release-2
+    chart: ./my-chart-2
+    namespace: default
+    labels:
+      release-name: my-release-2
+      owner: me
