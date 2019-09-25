@@ -11,5 +11,5 @@ spec:
     - name: test
       image: busybox
       command: ['wget']
-      args:  ['--spider', 'http://{{ tpl .Values.namingConventions.service.name . }}:{{ .Values.service.port }}']
+      args:  ['--spider', 'http://{{ tpl .Values.namingConventions.service.name . }}:{{ .Values.service.port }}', '-T', '5']
   restartPolicy: Never
