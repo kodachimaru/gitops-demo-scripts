@@ -1,0 +1,46 @@
+# Naming conventions
+app: kafka-manager
+
+
+# Custom configuration
+clusters:
+  - name: "kafka-demo"
+    kafkaVersion: "2.0.0"
+    jmxEnabled: "true"
+    logkafkaEnabled: "true"
+    pollConsumers: "true"
+    activeOffsetCacheEnabled: "true"
+    displaySizeEnabled: "true"
+    # Required {} even if empty
+    tuning: {}
+
+serviceAccount:
+  create: false
+
+image:
+  repository: zenko/kafka-manager
+  tag: 1.3.3.22
+  pullPolicy: IfNotPresent
+
+applicationSecret: ""
+
+basicAuth:
+  enabled: false
+  username: "admin"
+  password: ""
+
+javaOptions: ""
+
+service:
+  type: ClusterIP
+  port: 9000
+  annotations: {}
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

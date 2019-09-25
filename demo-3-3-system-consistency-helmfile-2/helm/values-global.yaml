@@ -1,0 +1,70 @@
+# All applications, all environments
+
+# Kube naming conventions
+
+# Example usage: {{ tpl .Values.namingConventions.secret.name . }}
+namingConventions:
+  _kubeResourceSuffix: '{{ printf "%s-%s" .Release.Namespace (required "Application ID" .Values.app) }}'
+  app:
+    name: '{{ .Values.app | trunc 63 | trimSuffix "-" }}'
+  secret:
+    name: '{{ printf "sec-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  service:
+    name: '{{ printf "svc-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  deployment:
+    name: '{{ printf "dpl-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  daemonSet:
+    name: '{{ printf "ds-%s" (tpl .Values.namingConventions._kubeResourceSuffix . ) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  job:
+    name: '{{ printf "job-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  configMap:
+    name: '{{ printf "cfg-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  serviceAccount:
+    name: '{{ printf "sa-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  clusterRole:
+    name: '{{ printf "crl-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  clusterRoleBinding:
+    name: '{{ printf "crb-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+  testPod:
+    # test-(SUFFIX)-r(REV_NUM)-(TEST_NAME)
+    #   SUFFIX = _kubeResourceSuffix
+    #   REV_NUM = .Release.Revision
+    #   TEST_NAME = Template file name (no extension) of the test pod, which carries the meaning of the test
+    # eg: test-demo-kafka-topics-ui-r1-Service_Is_Up
+    name: '{{ printf "test-%s-r%d-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) (.Release.Revision) (.Template.Name | regexFind "[^/]+$" | regexFind "^[^.]+") | replace "+" "-" | trunc 63 | trimSuffix "-" }}'
+
+  kubeResourceCommonLabels: |-
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/name: {{ tpl .Values.namingConventions.app.name . | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | replace "+" "_" | trunc 63 | quote }}
+    helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" | quote }}
+
+  ingress:
+    domain: demo.io
+    name: '{{ printf "ing-%s" (tpl .Values.namingConventions._kubeResourceSuffix .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}'
+    certificateSecretName: wild.demo.io
+    allDcHost: '{{ required "App name" .Values.app }}-{{ required "Stack" .Values.stack }}.{{ tpl .Values.namingConventions.ingress.domain . }}'
+    allDcTemplate: |-
+      ---
+      apiVersion: extensions/v1beta1
+      kind: Ingress
+      metadata:
+        name: {{ tpl .Values.namingConventions.ingress.name . | quote }}
+        namespace: {{ .Release.Namespace }}
+        annotations:
+          kubernetes.io/ingress.class: "nginx"
+        labels:
+          {{ tpl .Values.namingConventions.kubeResourceCommonLabels . | nindent 4 | trim }}
+      spec:
+        tls:
+        - hosts:
+          - {{ tpl .Values.namingConventions.ingress.allDcHost . | quote }}
+          secretName: {{ tpl .Values.namingConventions.ingress.certificateSecretName . | quote }}
+        rules:
+        - host: {{ tpl .Values.namingConventions.ingress.allDcHost . | quote }}
+          http:
+            paths:
+            - backend:
+                serviceName: {{ tpl .Values.namingConventions.service.name . | quote }}
+                servicePort: {{ .Values.service.port }}

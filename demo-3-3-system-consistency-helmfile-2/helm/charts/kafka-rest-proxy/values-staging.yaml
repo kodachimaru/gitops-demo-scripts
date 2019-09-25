@@ -1,0 +1,5 @@
+stack: staging
+
+kafkaRestProxy:
+  zookeeper:
+    url: zookeeper-0.staging.dc1.demo.io,zookeeper-0.staging.dc2.demo.io,zookeeper-0.staging.dc3.demo.io

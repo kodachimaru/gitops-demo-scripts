@@ -1,0 +1,31 @@
+{{- $cluster_details_base_url := printf "%s/clusters" (include "kafka-manager.service-base-url" .) -}}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: '{{ include "kafka-manager.test-pod-name" .}}'
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "kafka-manager.app-name" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | replace "+" "_" | trunc 63 }}
+    helm.sh/chart: {{ include "kafka-manager.chart" . }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  # Application is a classic web app, has no REST API, thus we always get HTTP 200. Need to parse HTML to detect errors
+  # When the cluster name is unknown, the URL http://service/clusters/cluster-name shows DIV with CSS class "alert-danger"
+  #       <div class="alert alert-danger" role="alert">
+  containers:
+    # Ask for a fake cluster, check that we do get the error DIV (ie check that we are testing correctly)
+    - name: error-accessing-fake-cluster
+      image: busybox
+      command: ['/bin/sh']
+      args: ['-c', 'test ! -z "$(wget -O - {{ $cluster_details_base_url }}/fake-cluster | grep alert-danger)"']
+    # Ask for the right cluster, check that we get no error DIV
+    # Careful, only checking for 1 cluster, the chart supports defining 1+ clusters
+    - name: no-error-accessing-correct-cluster
+      image: busybox
+      command: ['/bin/sh']
+      args: ['-c', 'test -z "$(wget -O - {{ $cluster_details_base_url }}/{{ (index .Values.clusters 0).name }} | grep alert-danger)"']
+  restartPolicy: Never

@@ -1,0 +1,4 @@
+stack: prod
+
+# kafka-manager config
+zkHosts: zookeeper-0.prod.dc1.demo.io,zookeeper-0.prod.dc2.demo.io,zookeeper-0.prod.dc3.demo.io

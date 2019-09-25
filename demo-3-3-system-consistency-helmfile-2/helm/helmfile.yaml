@@ -1,0 +1,43 @@
+# Helmfile
+#
+#   Prerequisites:
+#     - Install Helmfile binary: https://github.com/roboll/helmfile#installation
+#     - Install Helm Diff plugin for Helm: https://github.com/databus23/helm-diff#install
+#
+#   To install/upgrade all the specified releases:
+#     $ export STACK=integration
+#     $ helmfile apply
+#
+#   To install/upgrade only one specific release:
+#     $ export STACK=integration
+#     $ helmfile \
+#         --selector release-name=schema-registry-ui \
+#         apply
+#   
+#   To delete releases, same as above with: helmfile delete/destroy
+#
+
+helmDefaults:
+  tillerNamespace: kube-system
+
+releases:
+
+  - name: kafka-manager
+    chart: ./charts/kafka-manager
+    namespace: demo
+    labels:
+      release-name: kafka-manager
+    values:
+      - ./values-global.yaml
+      - ./charts/kafka-manager/values-{{ requiredEnv "STACK" }}.yaml
+    missingFileHandler: error
+
+  - name: kafka-rest-proxy
+    chart: ./charts/kafka-rest-proxy
+    namespace: demo
+    labels:
+      release-name: kafka-rest-proxy
+    values:
+      - ./values-global.yaml
+      - ./charts/kafka-rest-proxy/values-{{ requiredEnv "STACK" }}.yaml
+    missingFileHandler: error

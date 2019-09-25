@@ -1,0 +1,23 @@
+replicaCount: 1
+
+## Kafka rest JVM Heap Option
+heapOptions: "-Xms512M -Xmx512M"
+
+# Kafka REST proxy resources
+resources: {}
+
+# Kafka REST JMX Settings
+jmx:
+  port: 5555
+
+# Applicaton configuration
+kafkaRestProxy:
+  zookeeper:
+    url: ""
+  schemaRegistry:
+    url: http://svc-demo-schema-registry:8081
+
+# Naming conventions
+app: kafka-rest-proxy
+service:
+  port: 8082

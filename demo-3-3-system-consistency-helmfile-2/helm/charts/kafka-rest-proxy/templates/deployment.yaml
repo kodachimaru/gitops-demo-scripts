@@ -1,0 +1,44 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ tpl .Values.namingConventions.deployment.name . | quote }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{ tpl .Values.namingConventions.kubeResourceCommonLabels . | nindent 4 | trim }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ tpl .Values.namingConventions.app.name . | quote }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        {{ tpl .Values.namingConventions.kubeResourceCommonLabels . | nindent 8 | trim }}
+    spec:
+      containers:
+        - name: kafka-rest-proxy-server
+          image: "confluentinc/cp-kafka-rest:{{ .Chart.AppVersion }}"
+          ports:
+            - name: rest-proxy
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+            - containerPort: {{ .Values.jmx.port }}
+              name: jmx
+          env:
+          - name: KAFKA_REST_HOST_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: KAFKA_REST_ZOOKEEPER_CONNECT
+            value: {{ index .Values "kafkaRestProxy" "zookeeper" "url" }}
+          - name: KAFKA_REST_SCHEMA_REGISTRY_URL
+            value: {{ index .Values "kafkaRestProxy" "schemaRegistry" "url" }}
+          - name: KAFKAREST_HEAP_OPTS
+            value: "{{ .Values.heapOptions }}"
+          {{- range $key, $value := .Values.kafkaRestProxy.configurationOverrides }}
+          - name: {{ printf "KAFKA_REST_%s" $key | replace "." "_" | upper | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+          - name: KAFKA_REST_JMX_PORT
+            value: "{{ .Values.jmx.port }}"

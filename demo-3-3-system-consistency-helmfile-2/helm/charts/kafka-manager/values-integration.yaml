@@ -1,0 +1,4 @@
+stack: integration
+
+# kafka-manager config
+zkHosts: zookeeper-0.integration.dc1.demo.io,zookeeper-0.integration.dc2.demo.io,zookeeper-0.integration.dc3.demo.io

@@ -1,0 +1,5 @@
+name: kafka-rest-proxy
+version: "1.0"
+appVersion: "5.2.1"
+description: Confluent Kafka REST Proxy
+apiVersion: v1
