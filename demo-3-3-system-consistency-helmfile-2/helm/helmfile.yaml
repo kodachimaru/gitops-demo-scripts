@@ -1,17 +1,19 @@
 # Helmfile
 #
-#   Prerequisites:
-#     - Install Helmfile binary: https://github.com/roboll/helmfile#installation
-#     - Install Helm Diff plugin for Helm: https://github.com/databus23/helm-diff#install
+#   Input env variables:
+#     - STACK: [ integration | staging | prod ]
+#     - HELMFILE_RELEASES_LIST: 
+#         List of release names to install, separated by "|"
+#           E.g. "kafka-manager|kafka-rest-proxy"
+#         It would be cool to get this list from the list of subdirs under /helm/charts
+#         However, we cannot access dir listing functionality from Helmfile's GoTemplate context
 #
 #   To install/upgrade all the specified releases:
-#     $ export STACK=integration
 #     $ helmfile apply
 #
 #   To install/upgrade only one specific release:
-#     $ export STACK=integration
 #     $ helmfile \
-#         --selector release-name=schema-registry-ui \
+#         --selector release-name=kafka-manager \
 #         apply
 #   
 #   To delete releases, same as above with: helmfile delete/destroy
@@ -20,24 +22,17 @@
 helmDefaults:
   tillerNamespace: kube-system
 
+{{ $releases := splitList "|" (requiredEnv "HELMFILE_RELEASES_LIST") }}
+
 releases:
-
-  - name: kafka-manager
-    chart: ./charts/kafka-manager
+  {{- range $releases }}
+  - name: {{ . }}
+    chart: ./charts/{{ . }}
     namespace: demo
     labels:
-      release-name: kafka-manager
+      release-name: {{ . }}
     values:
       - ./values-global.yaml
-      - ./charts/kafka-manager/values-{{ requiredEnv "STACK" }}.yaml
+      - ./charts/{{ . }}/values-{{ requiredEnv "STACK" }}.yaml
     missingFileHandler: error
-
-  - name: kafka-rest-proxy
-    chart: ./charts/kafka-rest-proxy
-    namespace: demo
-    labels:
-      release-name: kafka-rest-proxy
-    values:
-      - ./values-global.yaml
-      - ./charts/kafka-rest-proxy/values-{{ requiredEnv "STACK" }}.yaml
-    missingFileHandler: error
+  {{- end }}

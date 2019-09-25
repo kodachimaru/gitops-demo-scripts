@@ -11,6 +11,11 @@ cd helm
 # Configure env variables used in our Helmfile
 export STACK=integration
 
+# Due to limitations of Helmfile (see helmfile.yaml), we pass the list of charts here
+# We build it from the subdirs of ./charts 
+# == "kafka-manager|kafka-rest-proxy"
+export HELMFILE_RELEASES_LIST="$(ls -1F ./charts | grep -e '.*/$' | sed -e 's/\/$//' | tr '\n' '|' | sed -e 's/\|$//' )"
+
 # See status.
 # Will fail, no releases installed yet.
 helmfile status
