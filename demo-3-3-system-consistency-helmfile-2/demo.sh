@@ -1,3 +1,7 @@
+#   Prerequisites:
+#     - Install Helmfile binary: https://github.com/roboll/helmfile#installation
+#     - Install Helm Diff plugin for Helm: https://github.com/databus23/helm-diff#install
+
 # Init Helm
 helm init
 
