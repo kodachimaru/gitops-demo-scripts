@@ -7,6 +7,7 @@ helm repo add fluxcd https://charts.fluxcd.io
 helm install \
 	--name flux \
 	--set helmOperator.create=true \
+    --set helmOperator.createCRD=true \
 	--set git.url=git@github.com:kodachimaru/gitops-demo-flux-1-automated-releases.git \
 	--set git.pollInterval=5s \
 	--namespace flux \
