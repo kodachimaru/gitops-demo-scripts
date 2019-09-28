@@ -23,8 +23,6 @@ kubectl logs -f $(kubectl get pods -o name | grep flux-helm-operator)
 
 # Create a HelmRelease for MongoDB
 kubectl create namespace demo
-#kubectl apply -f https://raw.githubusercontent.com/weaveworks/flux-get-started/master/releases/mongodb.yaml
-# HR CRD api group name has changed!
 kubectl apply -f ./helmrelease-mongodb.yaml
 watch helm status mongodb
 
@@ -34,11 +32,11 @@ kubectl describe helmrelease mongodb --namespace demo
 
 # Delete MongoDB release
 kubectl delete helmrelease mongodb --namespace demo
+	# The helmrelease "mongodb" is deleted
 
 
 
 # Create a chart-of-charts
-#kubectl apply -f https://raw.githubusercontent.com/kodachimaru/gitops-demo-helm-operator/7ab5eb13164539d99ed2d377d9875397b7ea1ec6/chart-of-charts.helmrelease.yaml
 kubectl apply -f https://raw.githubusercontent.com/kodachimaru/gitops-demo-helm-operator/master/chart-of-charts.helmrelease.yaml
 
 # List charts
@@ -58,6 +56,8 @@ helm test mysql --cleanup
 # Delete "mysql" release using Helm CLI --> HelmOp recreates it (HR CRD still present)
 helm delete --purge mysql
 	# If not using --purge HelmOp cannot recreate it!
+	# Need to wait for at least 3 minutes (default HR sync time, --charts-sync-interval)
+	# 	https://docs.fluxcd.io/projects/helm-operator/en/latest/references/operator.html#setup-and-configuration
 	# Delete HelmOp pod to avoid waiting for the demo...
 
 # Delete "coc"
