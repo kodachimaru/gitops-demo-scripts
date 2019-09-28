@@ -112,7 +112,7 @@ helm init
 
 # Install Flux
 
-helm repo add fluxcd https://fluxcd.github.io/flux
+helm repo add fluxcd https://charts.fluxcd.io
 
 
 # TODO: Once git-secret integration issue has been resolved (https://github.com/fluxcd/flux/issues/2462)

@@ -19,9 +19,8 @@ kubectl apply -f https://raw.githubusercontent.com/weaveworks/flux/master/deploy
 helm init
 
 # Install Flux
-# TODO: USE NEW HELM REPO IN ALL OTHER DEMOS!!!
 
-helm repo add fluxcd https://fluxcd.github.io/flux
+helm repo add fluxcd https://charts.fluxcd.io
 
 # Repo URL not important here (we just use the Helm Op)
 helm install \
