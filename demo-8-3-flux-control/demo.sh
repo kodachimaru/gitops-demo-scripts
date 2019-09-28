@@ -103,3 +103,5 @@ git branch -D staging
 git push origin --delete staging
 
 helm reset
+
+helm repo remove fluxcd

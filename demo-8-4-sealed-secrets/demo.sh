@@ -96,3 +96,5 @@ kubectl delete -f https://github.com/bitnami-labs/sealed-secrets/releases/downlo
 kubectl delete namespace staging
 
 helm reset
+
+helm repo remove fluxcd

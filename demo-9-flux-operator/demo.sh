@@ -71,3 +71,4 @@ helm delete --purge flux
 kubectl delete crd helmreleases.flux.weave.works
 kubectl delete namespace team-kolontai
 helm reset
+helm repo remove fluxcd

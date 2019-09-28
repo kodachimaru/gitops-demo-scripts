@@ -56,4 +56,5 @@ helm delete --purge mysql
 kubectl delete deployment nginx-deployment
 kubectl delete $(kubectl get crd -o name | grep flux)
 helm reset
+helm repo remove fluxcd
 

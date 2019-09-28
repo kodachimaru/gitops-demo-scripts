@@ -167,6 +167,7 @@ fluxctl identity
 helm delete --purge flux
 kubectl delete crd helmreleases.flux.weave.works
 helm reset
+helm repo remove fluxcd
 
 kubectl delete namespaces staging flux
 

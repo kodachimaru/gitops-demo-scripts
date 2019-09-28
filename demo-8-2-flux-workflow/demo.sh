@@ -197,3 +197,5 @@ helm delete --purge flux-prod
 kubectl delete crd helmreleases.flux.weave.works
 
 helm reset
+
+helm repo remove fluxcd
