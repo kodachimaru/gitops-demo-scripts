@@ -1,0 +1,27 @@
+apiVersion: flux.codesink.net/v1alpha1
+kind: Flux
+metadata:
+  name: team-kolontai
+spec:
+  namespace: team-kolontai
+  gitUrl: git@github.com:kodachimaru/gitops-demo-flux-operator.git
+  gitPath: workloads
+  gitPollInterval: 5s
+  syncInterval: 5s
+  clusterRole:
+    enabled: true
+  # Flux Operator is using by default older versions of Flux and HelmOperator
+  # We change them here to be the same ones as in the latest Flux Helm chart
+  #   https://github.com/fluxcd/flux/blob/master/chart/flux/values.yaml
+  # This is something that should really be preset by the Ops in the Flux Operator deployment config
+  # Hardcoded here for the lazy demo, to avoid having to customize the Flux Operator deployment. :-P
+  fluxImage: docker.io/fluxcd/flux
+  fluxVersion: 1.14.2
+  # Seems FluxOperator is not updated to support the latest helm-operator...
+  #   "unknown flag: --git-charts-path"
+  # This means that FluxOp is deprecated!
+  # We'll just create a global HelmOp, not managed by FluxOp
+  # helmOperator:
+  #   enabled: true
+  #   helmOperatorImage: docker.io/fluxcd/helm-operator
+  #   helmOperatorVersion: 0.10.1
