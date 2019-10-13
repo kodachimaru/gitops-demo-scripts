@@ -115,11 +115,6 @@ helm init
 helm repo add fluxcd https://charts.fluxcd.io
 
 
-# TODO: Once git-secret integration issue has been resolved (https://github.com/fluxcd/flux/issues/2462)
-#			* Remove known_hosts overriding
-#			* Remove Flux image tag overriding
-# Create known_hosts file for Flux to accept GitHub repos
-ssh-keyscan github.com > ./github_known_hosts
 helm install \
 	--name flux \
 	--set helmOperator.create=true \
@@ -130,9 +125,6 @@ helm install \
 	--set additionalArgs[0]="--git-secret" \
 	--set additionalArgs[1]="--k8s-verbosity=5" \
 	--set gpgKeys.secretName=git-secret-gpg-keys \
-    --set image.repository=docker.io/kyon/flux \
-    --set image.tag=v1.14.2 \
-    --set-file ssh.known_hosts=./github_known_hosts \
 	--namespace flux \
 	fluxcd/flux
 
